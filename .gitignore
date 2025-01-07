@@ -25,5 +25,5 @@ go.work.sum
 .env
 
 # folder to save the task data
-./data
+data
 
