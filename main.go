@@ -34,6 +34,8 @@ func main() {
 		markInProgress(service, args)
 	case "mark-done":
 		markDone(service, args)
+	case "list":
+		list(service, args)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)
@@ -158,4 +160,29 @@ func markDone(service service.TaskService, args []string) {
 	}
 
 	fmt.Printf("Task '%s' status updated successfully!\n", taskId)
+}
+
+func list(service service.TaskService, args []string) {
+	if len(args) < 2 {
+		tasks := service.GetAllTask(nil)
+		for i := range tasks {
+			fmt.Printf("%d %s (%s)\n", tasks[i].Id, tasks[i].Name, models.StatusNames[tasks[i].Status])
+		}
+		return
+	}
+
+	taskStatus := 0
+	switch args[1] {
+	case "todo":
+		taskStatus = models.Todo
+	case "in-progress":
+		taskStatus = models.Inprogress
+	case "done":
+		taskStatus = models.Done
+	}
+
+	tasks := service.GetAllTask(&taskStatus)
+	for i := range tasks {
+		fmt.Printf("%d %s (%s)\n", tasks[i].Id, tasks[i].Name, models.StatusNames[tasks[i].Status])
+	}
 }

@@ -87,6 +87,29 @@ func (r *TaskRepository) Get(id int) (models.Task, error) {
 	return models.Task{}, fmt.Errorf("task with id %d not found", id)
 }
 
+func (r *TaskRepository) GetAll(status *models.Status) []models.Task {
+	var tasks []models.Task
+
+	err := storage.LoadFromFile(r.Filename, &tasks)
+
+	if err != nil {
+		return []models.Task{}
+	}
+
+	if status == nil {
+		return tasks
+	}
+
+	filteredTask := []models.Task{}
+	for i := range tasks {
+		if tasks[i].Status == *status {
+			filteredTask = append(filteredTask, tasks[i])
+		}
+	}
+
+	return filteredTask
+}
+
 func getNewId(tasks []models.Task) int {
 	maxId := 0
 	for _, task := range tasks {

@@ -31,3 +31,7 @@ func (r *TaskService) DeleteTask(id int) error {
 
 	return r.Repository.Delete(id)
 }
+
+func (r *TaskService) GetAllTask(status *models.Status) []models.Task {
+	return r.Repository.GetAll(status)
+}
