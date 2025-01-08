@@ -24,12 +24,52 @@ func (r *TaskRepository) Create(task models.Task) error {
 	return storage.SaveToFile(r.Filename, tasks)
 }
 
-func Edit(task models.Task) error {
-	return nil
+func (r *TaskRepository) Update(id int, task models.Task) error {
+	var tasks []models.Task
+
+	err := storage.LoadFromFile(r.Filename, &tasks)
+
+	if err != nil {
+		return fmt.Errorf("failed to load from file: %w", err)
+	}
+
+	currentTask := getById(tasks, id)
+
+	if currentTask == nil {
+		return fmt.Errorf("task with id %d is not found", id)
+	}
+
+	if task.Name != "" {
+		currentTask.Name = task.Name
+	}
+
+	if task.Status != 0 {
+		currentTask.Status = task.Status
+	}
+
+	return storage.SaveToFile(r.Filename, tasks)
 }
 
 func Delete(id int) error {
 	return nil
+}
+
+func (r *TaskRepository) Get(id int) (models.Task, error) {
+	var tasks []models.Task
+
+	err := storage.LoadFromFile(r.Filename, &tasks)
+
+	if err != nil {
+		return models.Task{}, fmt.Errorf("failed to load from file: %w", err)
+	}
+
+	for _, task := range tasks {
+		if task.Id == id {
+			return task, nil
+		}
+	}
+
+	return models.Task{}, fmt.Errorf("task with id %d not found", id)
 }
 
 func getNewId(tasks []models.Task) int {
@@ -41,4 +81,14 @@ func getNewId(tasks []models.Task) int {
 	}
 
 	return maxId + 1
+}
+
+func getById(tasks []models.Task, id int) *models.Task {
+	for i := range tasks {
+		if tasks[i].Id == id {
+			return &tasks[i]
+		}
+	}
+
+	return nil
 }

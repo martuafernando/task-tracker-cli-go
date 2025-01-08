@@ -16,3 +16,11 @@ func (r TaskService) AddTask(taskname string) error {
 	}
 	return r.Repository.Create(task)
 }
+
+func (r TaskService) UpdateTask(id int, taskname string) error {
+	udpateTask := models.Task{
+		Name: taskname,
+	}
+
+	return r.Repository.Update(id, udpateTask)
+}

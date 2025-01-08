@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"task-tracker-cli/repository"
 	"task-tracker-cli/service"
 )
@@ -23,20 +24,50 @@ func main() {
 
 	switch command := args[0]; command {
 	case "add":
-		if len(args) < 2 {
-			fmt.Println("Task name is not provided")
-			os.Exit(1)
-		}
-
-		taskName := args[1]
-		if err := service.AddTask(taskName); err != nil {
-			fmt.Printf("Failed to add task: %v\n", err)
-			os.Exit(1)
-		}
-
-		fmt.Printf("Task '%s' added successfully!\n", taskName)
+		addTask(service, args)
+	case "update":
+		updateTask(service, args)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)
 	}
+}
+
+func addTask(service service.TaskService, args []string) {
+	if len(args) < 2 {
+		fmt.Println("Task name is not provided")
+		os.Exit(1)
+	}
+
+	taskName := args[1]
+	if err := service.AddTask(taskName); err != nil {
+		fmt.Printf("Failed to add task: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Task '%s' added successfully!\n", taskName)
+}
+
+func updateTask(service service.TaskService, args []string) {
+	if len(args) < 3 {
+		fmt.Println("Id and Task name is not provided")
+		os.Exit(1)
+	}
+
+	taskId := args[1]
+	taskName := args[2]
+
+	num, err := strconv.Atoi(taskId)
+
+	if err != nil {
+		fmt.Println("Id must be integer")
+		os.Exit(1)
+	}
+
+	if err := service.UpdateTask(num, taskName); err != nil {
+		fmt.Printf("Failed to add task: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Task '%s' udpated successfully!\n", taskName)
 }
