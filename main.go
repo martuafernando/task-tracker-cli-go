@@ -27,6 +27,8 @@ func main() {
 		addTask(service, args)
 	case "update":
 		updateTask(service, args)
+	case "delete":
+		deleteTask(service, args)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)
@@ -70,4 +72,27 @@ func updateTask(service service.TaskService, args []string) {
 	}
 
 	fmt.Printf("Task '%s' udpated successfully!\n", taskName)
+}
+
+func deleteTask(service service.TaskService, args []string) {
+	if len(args) < 2 {
+		fmt.Println("Id task is not provided")
+		os.Exit(1)
+	}
+
+	taskId := args[1]
+
+	num, err := strconv.Atoi(taskId)
+
+	if err != nil {
+		fmt.Println("Id must be integer")
+		os.Exit(1)
+	}
+
+	if err := service.DeleteTask(num); err != nil {
+		fmt.Printf("Failed to add task: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Task with Id %s deleted successfully!\n", taskId)
 }

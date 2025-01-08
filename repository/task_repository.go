@@ -50,8 +50,23 @@ func (r *TaskRepository) Update(id int, task models.Task) error {
 	return storage.SaveToFile(r.Filename, tasks)
 }
 
-func Delete(id int) error {
-	return nil
+func (r *TaskRepository) Delete(id int) error {
+	var tasks []models.Task
+
+	err := storage.LoadFromFile(r.Filename, &tasks)
+
+	if err != nil {
+		return fmt.Errorf("failed to load from file: %w", err)
+	}
+
+	var index = 0
+	for i := range tasks {
+		if tasks[i].Id == id {
+			index = i
+		}
+	}
+
+	return storage.SaveToFile(r.Filename, append(tasks[:index], tasks[index+1:]...))
 }
 
 func (r *TaskRepository) Get(id int) (models.Task, error) {
