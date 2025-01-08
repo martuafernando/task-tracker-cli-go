@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"task-tracker-cli/models"
 	"task-tracker-cli/repository"
 	"task-tracker-cli/service"
 )
@@ -29,6 +30,10 @@ func main() {
 		updateTask(service, args)
 	case "delete":
 		deleteTask(service, args)
+	case "mark-in-progress":
+		markInProgress(service, args)
+	case "mark-done":
+		markDone(service, args)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)
@@ -66,12 +71,16 @@ func updateTask(service service.TaskService, args []string) {
 		os.Exit(1)
 	}
 
-	if err := service.UpdateTask(num, taskName); err != nil {
+	updatedTask := models.Task{
+		Name: taskName,
+	}
+
+	if err := service.UpdateTask(num, updatedTask); err != nil {
 		fmt.Printf("Failed to add task: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("Task '%s' udpated successfully!\n", taskName)
+	fmt.Printf("Task '%s' updated successfully!\n", taskName)
 }
 
 func deleteTask(service service.TaskService, args []string) {
@@ -95,4 +104,58 @@ func deleteTask(service service.TaskService, args []string) {
 	}
 
 	fmt.Printf("Task with Id %s deleted successfully!\n", taskId)
+}
+
+func markInProgress(service service.TaskService, args []string) {
+	if len(args) < 2 {
+		fmt.Println("Id Task is not provided")
+		os.Exit(1)
+	}
+
+	taskId := args[1]
+
+	num, err := strconv.Atoi(taskId)
+
+	if err != nil {
+		fmt.Println("Id must be integer")
+		os.Exit(1)
+	}
+
+	updatedTask := models.Task{
+		Status: models.Inprogress,
+	}
+
+	if err := service.UpdateTask(num, updatedTask); err != nil {
+		fmt.Printf("Failed to add task: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Task '%s' status updated successfully!\n", taskId)
+}
+
+func markDone(service service.TaskService, args []string) {
+	if len(args) < 2 {
+		fmt.Println("Id Task is not provided")
+		os.Exit(1)
+	}
+
+	taskId := args[1]
+
+	num, err := strconv.Atoi(taskId)
+
+	if err != nil {
+		fmt.Println("Id must be integer")
+		os.Exit(1)
+	}
+
+	updatedTask := models.Task{
+		Status: models.Done,
+	}
+
+	if err := service.UpdateTask(num, updatedTask); err != nil {
+		fmt.Printf("Failed to add task: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Task '%s' status updated successfully!\n", taskId)
 }
