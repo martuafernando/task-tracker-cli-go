@@ -7,14 +7,18 @@ import (
 	"task-tracker-cli/models"
 	"task-tracker-cli/repository"
 	"task-tracker-cli/service"
+	"task-tracker-cli/storage"
 )
 
 func main() {
 	args := os.Args[1:]
-	repo := repository.TaskRepository{
+	fileStorage := storage.FileStorage{
 		Filename: "./data/data.json",
 	}
-	service := service.TaskService{
+	repo := repository.TaskRepository{
+		Filestorage: &fileStorage,
+	}
+	taskService := service.TaskService{
 		Repository: &repo,
 	}
 
@@ -25,17 +29,17 @@ func main() {
 
 	switch command := args[0]; command {
 	case "add":
-		addTask(service, args)
+		addTask(taskService, args)
 	case "update":
-		updateTask(service, args)
+		updateTask(taskService, args)
 	case "delete":
-		deleteTask(service, args)
+		deleteTask(taskService, args)
 	case "mark-in-progress":
-		markInProgress(service, args)
+		markInProgress(taskService, args)
 	case "mark-done":
-		markDone(service, args)
+		markDone(taskService, args)
 	case "list":
-		list(service, args)
+		list(taskService, args)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)

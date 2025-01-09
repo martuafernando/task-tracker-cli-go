@@ -7,13 +7,13 @@ import (
 )
 
 type TaskRepository struct {
-	Filename string
+	Filestorage *storage.FileStorage
 }
 
 func (r *TaskRepository) Create(task models.Task) error {
 	var tasks []models.Task
 
-	err := storage.LoadFromFile(r.Filename, &tasks)
+	err := r.Filestorage.LoadFromFile(&tasks)
 
 	if err != nil {
 		return fmt.Errorf("failed to load from file: %w", err)
@@ -21,13 +21,13 @@ func (r *TaskRepository) Create(task models.Task) error {
 
 	task.Id = getNewId(tasks)
 	tasks = append(tasks, task)
-	return storage.SaveToFile(r.Filename, tasks)
+	return r.Filestorage.SaveToFile(tasks)
 }
 
 func (r *TaskRepository) Update(id int, task models.Task) error {
 	var tasks []models.Task
 
-	err := storage.LoadFromFile(r.Filename, &tasks)
+	err := r.Filestorage.LoadFromFile(&tasks)
 
 	if err != nil {
 		return fmt.Errorf("failed to load from file: %w", err)
@@ -47,13 +47,13 @@ func (r *TaskRepository) Update(id int, task models.Task) error {
 		currentTask.Status = task.Status
 	}
 
-	return storage.SaveToFile(r.Filename, tasks)
+	return r.Filestorage.SaveToFile(tasks)
 }
 
 func (r *TaskRepository) Delete(id int) error {
 	var tasks []models.Task
 
-	err := storage.LoadFromFile(r.Filename, &tasks)
+	err := r.Filestorage.LoadFromFile(&tasks)
 
 	if err != nil {
 		return fmt.Errorf("failed to load from file: %w", err)
@@ -66,13 +66,13 @@ func (r *TaskRepository) Delete(id int) error {
 		}
 	}
 
-	return storage.SaveToFile(r.Filename, append(tasks[:index], tasks[index+1:]...))
+	return r.Filestorage.SaveToFile(append(tasks[:index], tasks[index+1:]...))
 }
 
 func (r *TaskRepository) Get(id int) (models.Task, error) {
 	var tasks []models.Task
 
-	err := storage.LoadFromFile(r.Filename, &tasks)
+	err := r.Filestorage.LoadFromFile(&tasks)
 
 	if err != nil {
 		return models.Task{}, fmt.Errorf("failed to load from file: %w", err)
@@ -90,7 +90,7 @@ func (r *TaskRepository) Get(id int) (models.Task, error) {
 func (r *TaskRepository) GetAll(status *models.Status) []models.Task {
 	var tasks []models.Task
 
-	err := storage.LoadFromFile(r.Filename, &tasks)
+	err := r.Filestorage.LoadFromFile(&tasks)
 
 	if err != nil {
 		return []models.Task{}

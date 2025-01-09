@@ -8,14 +8,18 @@ import (
 	"path/filepath"
 )
 
-func SaveToFile(filename string, data any) error {
-	dir := filepath.Dir(filename)
+type FileStorage struct {
+	Filename string
+}
+
+func (s *FileStorage) SaveToFile(data any) error {
+	dir := filepath.Dir(s.Filename)
 
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	file, err := os.Create(filename)
+	file, err := os.Create(s.Filename)
 
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
@@ -28,8 +32,8 @@ func SaveToFile(filename string, data any) error {
 	return encoder.Encode(data)
 }
 
-func LoadFromFile(filename string, v any) error {
-	file, err := os.Open(filename)
+func (s *FileStorage) LoadFromFile(v any) error {
+	file, err := os.Open(s.Filename)
 
 	if os.IsNotExist(err) {
 		emptyData := []byte("[]")
