@@ -6,11 +6,18 @@ import (
 	"task-tracker-cli/repository"
 )
 
-type TaskService struct {
+type TaskService interface {
+	AddTask(taskname string) error
+	UpdateTask(id int, task models.Task) error
+	DeleteTask(id int) error
+	GetAllTask(status *models.Status) []models.Task
+}
+
+type TaskServiceImpl struct {
 	Repository repository.TaskRepository
 }
 
-func (r *TaskService) AddTask(taskname string) error {
+func (r *TaskServiceImpl) AddTask(taskname string) error {
 	task := models.Task{
 		Name:   taskname,
 		Status: models.Todo,
@@ -18,11 +25,11 @@ func (r *TaskService) AddTask(taskname string) error {
 	return r.Repository.Create(task)
 }
 
-func (r *TaskService) UpdateTask(id int, task models.Task) error {
+func (r *TaskServiceImpl) UpdateTask(id int, task models.Task) error {
 	return r.Repository.Update(id, task)
 }
 
-func (r *TaskService) DeleteTask(id int) error {
+func (r *TaskServiceImpl) DeleteTask(id int) error {
 	_, err := r.Repository.Get(id)
 
 	if err != nil {
@@ -32,6 +39,6 @@ func (r *TaskService) DeleteTask(id int) error {
 	return r.Repository.Delete(id)
 }
 
-func (r *TaskService) GetAllTask(status *models.Status) []models.Task {
+func (r *TaskServiceImpl) GetAllTask(status *models.Status) []models.Task {
 	return r.Repository.GetAll(status)
 }

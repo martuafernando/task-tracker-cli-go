@@ -18,7 +18,7 @@ func main() {
 	repo := repository.TaskRepositoryImpl{
 		Filestorage: &fileStorage,
 	}
-	taskService := service.TaskService{
+	taskService := service.TaskServiceImpl{
 		Repository: &repo,
 	}
 
@@ -29,17 +29,17 @@ func main() {
 
 	switch command := args[0]; command {
 	case "add":
-		addTask(taskService, args)
+		addTask(&taskService, args)
 	case "update":
-		updateTask(taskService, args)
+		updateTask(&taskService, args)
 	case "delete":
-		deleteTask(taskService, args)
+		deleteTask(&taskService, args)
 	case "mark-in-progress":
-		markInProgress(taskService, args)
+		markInProgress(&taskService, args)
 	case "mark-done":
-		markDone(taskService, args)
+		markDone(&taskService, args)
 	case "list":
-		list(taskService, args)
+		list(&taskService, args)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		os.Exit(1)
