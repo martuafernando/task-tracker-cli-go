@@ -10,7 +10,7 @@ const (
 
 var StatusNames = map[Status]string{
 	Todo:       "Todo",
-	Inprogress: "In progress",
+	Inprogress: "In Progress",
 	Done:       "Done",
 }
 

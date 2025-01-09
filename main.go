@@ -23,7 +23,7 @@ func main() {
 	}
 
 	if len(args) == 0 {
-		fmt.Println("No command provided. Available commands: add")
+		fmt.Println("No command provided. Available commands: add, update, delete, mark-in-progress, mark-done, list")
 		os.Exit(1)
 	}
 
