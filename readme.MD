@@ -1,7 +1,6 @@
 # Task Tracker CLI Documentation
 
-## Overview
-The Task Tracker CLI provides a simple interface to manage tasks with commands for adding, updating, deleting, and listing tasks. It also includes functionality to update task statuses (e.g., marking them as "in-progress" or "done"). Tasks are stored in a JSON file for persistence.
+The Task Tracker CLI provides a simple interface to manage tasks with commands for adding, updating, deleting, and listing tasks. It also includes functionality to update task statuses (e.g., marking them as "in-progress" or "done"). Tasks are stored in a JSON file for persistence. It is built as part of the [Task Tracker Project](https://roadmap.sh/projects/task-tracker) from the roadmap.sh.
 
 ---
 
