@@ -8,11 +8,16 @@ import (
 	"path/filepath"
 )
 
-type FileStorage struct {
+type FileStorage interface {
+	Save(data any) error
+	Load(v any) error
+}
+
+type FileStorageImpl struct {
 	Filename string
 }
 
-func (s *FileStorage) SaveToFile(data any) error {
+func (s *FileStorageImpl) Save(data any) error {
 	dir := filepath.Dir(s.Filename)
 
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -32,7 +37,7 @@ func (s *FileStorage) SaveToFile(data any) error {
 	return encoder.Encode(data)
 }
 
-func (s *FileStorage) LoadFromFile(v any) error {
+func (s *FileStorageImpl) Load(v any) error {
 	file, err := os.Open(s.Filename)
 
 	if os.IsNotExist(err) {

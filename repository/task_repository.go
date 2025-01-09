@@ -6,14 +6,22 @@ import (
 	"task-tracker-cli/storage"
 )
 
-type TaskRepository struct {
-	Filestorage *storage.FileStorage
+type TaskRepository interface {
+	Create(task models.Task) error
+	Update(id int, task models.Task) error
+	Delete(id int) error
+	Get(id int) (models.Task, error)
+	GetAll(status *models.Status) []models.Task
 }
 
-func (r *TaskRepository) Create(task models.Task) error {
+type TaskRepositoryImpl struct {
+	Filestorage storage.FileStorage
+}
+
+func (r *TaskRepositoryImpl) Create(task models.Task) error {
 	var tasks []models.Task
 
-	err := r.Filestorage.LoadFromFile(&tasks)
+	err := r.Filestorage.Load(&tasks)
 
 	if err != nil {
 		return fmt.Errorf("failed to load from file: %w", err)
@@ -21,13 +29,13 @@ func (r *TaskRepository) Create(task models.Task) error {
 
 	task.Id = getNewId(tasks)
 	tasks = append(tasks, task)
-	return r.Filestorage.SaveToFile(tasks)
+	return r.Filestorage.Save(tasks)
 }
 
-func (r *TaskRepository) Update(id int, task models.Task) error {
+func (r *TaskRepositoryImpl) Update(id int, task models.Task) error {
 	var tasks []models.Task
 
-	err := r.Filestorage.LoadFromFile(&tasks)
+	err := r.Filestorage.Load(&tasks)
 
 	if err != nil {
 		return fmt.Errorf("failed to load from file: %w", err)
@@ -47,13 +55,13 @@ func (r *TaskRepository) Update(id int, task models.Task) error {
 		currentTask.Status = task.Status
 	}
 
-	return r.Filestorage.SaveToFile(tasks)
+	return r.Filestorage.Save(tasks)
 }
 
-func (r *TaskRepository) Delete(id int) error {
+func (r *TaskRepositoryImpl) Delete(id int) error {
 	var tasks []models.Task
 
-	err := r.Filestorage.LoadFromFile(&tasks)
+	err := r.Filestorage.Load(&tasks)
 
 	if err != nil {
 		return fmt.Errorf("failed to load from file: %w", err)
@@ -66,13 +74,13 @@ func (r *TaskRepository) Delete(id int) error {
 		}
 	}
 
-	return r.Filestorage.SaveToFile(append(tasks[:index], tasks[index+1:]...))
+	return r.Filestorage.Save(append(tasks[:index], tasks[index+1:]...))
 }
 
-func (r *TaskRepository) Get(id int) (models.Task, error) {
+func (r *TaskRepositoryImpl) Get(id int) (models.Task, error) {
 	var tasks []models.Task
 
-	err := r.Filestorage.LoadFromFile(&tasks)
+	err := r.Filestorage.Load(&tasks)
 
 	if err != nil {
 		return models.Task{}, fmt.Errorf("failed to load from file: %w", err)
@@ -87,10 +95,10 @@ func (r *TaskRepository) Get(id int) (models.Task, error) {
 	return models.Task{}, fmt.Errorf("task with id %d not found", id)
 }
 
-func (r *TaskRepository) GetAll(status *models.Status) []models.Task {
+func (r *TaskRepositoryImpl) GetAll(status *models.Status) []models.Task {
 	var tasks []models.Task
 
-	err := r.Filestorage.LoadFromFile(&tasks)
+	err := r.Filestorage.Load(&tasks)
 
 	if err != nil {
 		return []models.Task{}

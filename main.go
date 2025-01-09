@@ -12,10 +12,10 @@ import (
 
 func main() {
 	args := os.Args[1:]
-	fileStorage := storage.FileStorage{
+	fileStorage := storage.FileStorageImpl{
 		Filename: "./data/data.json",
 	}
-	repo := repository.TaskRepository{
+	repo := repository.TaskRepositoryImpl{
 		Filestorage: &fileStorage,
 	}
 	taskService := service.TaskService{
